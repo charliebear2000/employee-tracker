@@ -6,7 +6,7 @@ VALUES
    ('Product'),
    ('Data Science');
 
-INSERT INTO roles (title, salary, department_id, )
+INSERT INTO roles (title, salary, department_id)
 VALUES
    ('Software Engineer', 85000, 1),
    ('Data Engineer', 80000, 1),
@@ -21,8 +21,9 @@ VALUES
    ('Data Scientist', 92000, 5),
    ('Quantitative Analyst', 120000, 5);
 
-   INSERT INTO   employee (first_name, last_name, role_id, manager_id)
-   ('Tom', 'Adams', 3, 2)
+   INSERT INTO employee (first_name, last_name, role_id, manager_id)
+   VALUES
+   ('Tom', 'Adams', 3, 2),
    ('Jennifer', 'Wolf', 1, NULL),
    ('Francisco', 'Harding', 2, 2),
    ('Bruce', 'Hernandez', 1, 2),
