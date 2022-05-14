@@ -1,13 +1,6 @@
-const express = require('express');
+const inquirer = require('inquirer');
+const cTable = require('console.table');
 const mysql = require('mysql2');
-const db = require('./db/connection');
-
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 // connect to database
 const db = mysql.createConnection(
@@ -17,13 +10,15 @@ const db = mysql.createConnection(
       password: 'Cloverhill2022$',
       database: 'business'
    },
+
    console.log('Connected to the business database.')
 );
 
+// Start server after DB connection
+db.connect(err => {
+   if (err) throw err;
+   console.log('Database connected.');
+
+   });
 
 
-app.listen(PORT, () => {
-   console.log(`Server running on ${PORT}`);
-});
-
-module.exports = db;

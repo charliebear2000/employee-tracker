@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS business;
+CREATE DATABASE business;
+USE business;
+
 DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS department;
