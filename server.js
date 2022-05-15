@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const mysql = require('mysql2');
-const Connection = require('mysql2/typings/mysql/lib/Connection');
 
 // connect to database
 const db = mysql.createConnection(
@@ -41,30 +40,60 @@ const userInput = () => {
       }
    ])
    .then(answer => {
-      if (answer.userInput === 'View all departments') {
+      if (answer.mainMenu === 'View all departments') {
          viewDepartments();
       }
-      if (answer.userInput === 'View all roles') {
+      if (answer.mainMenu === 'View all roles') {
          viewRoles();
       }
-      if (answer.userInput === 'View all employees') {
+      if (answer.mainMenu === 'View all employees') {
          viewEmployees();
       }
-      if (answer.userInput === 'Add a department') {
+      if (answer.mainMenu === 'Add a department') {
          addDepartment();
       }
-      if (answer.userInput === 'Add a role') {
+      if (answer.mainMenut === 'Add a role') {
          addRole();
       }
-      if (answer.userInput === 'Add an employee') {
+      if (answer.mainMenu === 'Add an employee') {
          addEmployee();
       }
-      if (answer.userInput === 'Update an employee role') {
+      if (answer.mainMenu === 'Update an employee role') {
          employeeRole();
       }
-      if (answer.userInput === 'Exit application') {
+      if (answer.mainMenu === 'Exit application') {
          db.end();
       }
    });
 };
 
+// function for all departments
+const viewDepartments = () => {
+   const sql = `SELECT department.id AS Department_ID, department.name AS Department_Name FROM department`;
+
+   db.query(sql, (err, sql) => {
+      if(err) {
+         console.log(err);
+         return;
+      }
+      console.table(sql);
+      userInput();
+      
+   });
+};
+
+// function for all roles
+const viewRoles = () => {
+   const sql = `SELECT roles.id, roles.title, roles.salary, department.name AS department
+               FROM roles LEFT JOIN department ON roles.department_id = department.id`;
+
+   db.query(sql, (err, sql) => {
+      if(err) {
+         console.log(err);
+         return;
+      }
+      console.table(sql);
+      userInput();
+      
+   });
+};
