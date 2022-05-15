@@ -78,7 +78,6 @@ const viewDepartments = () => {
       }
       console.table(sql);
       userInput();
-      
    });
 };
 
@@ -94,6 +93,25 @@ const viewRoles = () => {
       }
       console.table(sql);
       userInput();
-      
    });
 };
+
+// function for all employees
+const viewEmployees = () => {
+   const sql = `SELECT employee.id AS Employee_ID, employee.first_name,
+               employee.last_name, roles.title, roles.salary, 
+               department.name AS department, CONCAT(emp.first_name, ' ', emp.last_name)
+               AS manager_name FROM employee INNER JOIN roles ON roles.id = employee.role_id
+               INNER JOIN department on department.id = roles.department_id
+               LEFT JOIN employee emp ON employee.manager_id = emp.id`;
+
+   db.query(sql, (err, sql) => {
+      if(err) {
+         console.log(err);
+         return;
+      }
+      console.table(sql);
+      userInput();
+   });
+
+}
