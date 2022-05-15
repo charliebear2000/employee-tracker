@@ -52,7 +52,7 @@ const userInput = () => {
       if (answer.mainMenu === 'Add a department') {
          addDepartment();
       }
-      if (answer.mainMenut === 'Add a role') {
+      if (answer.mainMenu === 'Add a role') {
          addRole();
       }
       if (answer.mainMenu === 'Add an employee') {
@@ -115,3 +115,91 @@ const viewEmployees = () => {
    });
 
 }
+
+// function for adding a department
+const addDepartment = () => {
+   inquirer.prompt([
+      {
+         type: 'input',
+         name: 'addDept',
+         message: 'Enter the name of the department.',
+         validate: addDept => {
+            if(addDept) {
+               return true;
+            } else {
+               console.log('Please enter a department name.');
+               return false;
+            }
+         }
+      }
+   ])
+   .then(answer => {
+      const sql = `INSERT INTO department (name) VALUES (?)`;
+      db.query(sql, answer.addDept, (err, res) => {
+         if(err) {
+            console.log(err);
+            return;
+         }
+         viewDepartments();
+      });
+   })
+}
+
+// function for adding a role
+const addRole = () => {
+   inquirer.prompt([
+       {
+         type: 'input',
+         name: 'role',
+         message: 'Enter the job title.',
+         validate: addRole => {
+            if(addRole) {
+               return true;
+            } else {
+               console.log('Please enter a job title.');
+               return false;
+            }
+         }
+      },
+      {
+         type: 'input',
+         name: 'salary',
+         message: 'Enter the salary for this position.',
+         validate: addSalary => {
+            if(addSalary) {
+               return true;
+            } else {
+               console.log('Please enter a salary.');
+               return false;
+            }
+         }
+      },
+      {
+         type: 'input',
+         name: 'dept',
+         message: 'Enter the department ID number for this position.',
+         validate: addDept => {
+            if(addDept) {
+               return true;
+            } else {
+               console.log('Please enter the department ID number.');
+               return false;
+            }
+         }
+      }
+   ])
+   .then(answer => {
+      const params = [answer.role, answer.salary, answer.dept]
+      const sql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`;
+      db.query(sql, params, (err, res) => {
+         if(err) {
+            console.log(err);
+            return;
+         }
+         viewRoles();
+      });
+   })
+}
+
+
+   
