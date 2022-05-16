@@ -21,7 +21,7 @@
   ## Usage:
   
   Use this link to watch a video that walks through the application.
-  <iframe src="https://drive.google.com/file/d/1TOxyGL29wYKeu0xoHeizu8DxN7YdhtY0/preview" width="640" height="480"></iframe>
+  [Walkthrough Video](https://watch.screencastify.com/v/v5Fr6kRm27MyIq6AXDDt)
   
 
   ## License:
