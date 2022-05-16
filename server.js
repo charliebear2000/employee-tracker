@@ -142,7 +142,7 @@ const addDepartment = () => {
          }
          viewDepartments();
       });
-   })
+   });
 }
 
 // function for adding a role
@@ -232,9 +232,11 @@ const addEmployee = () => {
       }
    ])
 
+   // add the name to the employee array
    .then(answer => {
       const empArray = [answer.firstName, answer.lastName]
 
+      // take role titles and use them as choices for the next prompt
       const roleTable = `SELECT roles.id, roles.title FROM roles`;
       db.query(roleTable, (err, data) => {
          if (err) {
@@ -251,10 +253,12 @@ const addEmployee = () => {
                choices: role
             }
          ])
+         // add the role title to the employee array
          .then(jobTitle => {
             const job = jobTitle.role;
             empArray.push(job);
 
+            // take manager names and use them as choices for the next prompt
             const managerSql = `SELECT * FROM employee`;
             db.query(managerSql, (err, data) => {
                if (err) {
@@ -271,10 +275,12 @@ const addEmployee = () => {
                      choices: manager
                   }
                ])
+               // add manager name to emplyee array
                .then(managerChoice => {
                   const boss = managerChoice.manager;
                   empArray.push(boss);
 
+                  // use the employee array to create the add employee table
                   const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
                   db.query(sql, empArray, (err, res) => {
                      if (err) {
@@ -286,7 +292,70 @@ const addEmployee = () => {
                });
             });
          });
-      })
-   })
+      });
+   });
 }
    
+// function to update employee role
+const employeeRole = () => {
+   const updateEmp = `SELECT * FROM employee`;
+
+   db.query(updateEmp, (err, data) => {
+      if(err) {
+         console.log(err);
+         return;
+      }
+   
+      const employee = data.map(({ id, first_name, last_name}) => ({ name: first_name + " " + last_name, value: id}));
+      
+      inquirer.prompt ([
+         {
+            type: 'list',
+            name: 'name',
+            message: 'Choose an employee to update.',
+            choices: employee
+         }
+      ])
+
+      .then(employeeChoice => {
+         const emp = employeeChoice.name;
+         const empArray = [];
+         empArray.push(emp);
+
+         const empSql = `SELECT * FROM roles`;
+
+         db.query(empSql, (err, data) => {
+            if(err) {
+               console.log(err);
+               return;
+            }
+         
+            const newRole = data.map(({ id, title}) => ({ name: title, value: id}));
+         
+            inquirer.prompt([
+               {
+                  type: 'list',
+                  name: 'title',
+                  message: "Choose the employee's new job title.",
+                  choices: newRole
+               }
+            ])
+
+            .then(newRoleChoice => {
+               role = newRoleChoice.title;
+               empArray.push(role);
+               empArray.reverse();
+
+               const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+               db.query(sql, empArray, (err, res) => {
+                  if (err) {
+                     console.log(err);
+                     return
+                  }
+                  viewEmployees();
+               });
+            });
+         });
+      });
+   });
+}
