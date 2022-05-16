@@ -201,5 +201,92 @@ const addRole = () => {
    })
 }
 
+// function for adding an employee
+const addEmployee = () => {
+   inquirer.prompt([
+      {
+         type: 'input',
+         name: 'firstName',
+         message: "Enter the employee's first name.",
+         validate: addFirst => {
+            if(addFirst) {
+               return true;
+            } else {
+               console.log('Please enter the first name.');
+               return false;
+            }
+         }
+      },
+      {
+         type: 'input',
+         name: 'lastName',
+         message: "Enter the employee's last name.",
+         validate: addLast => {
+            if(addLast) {
+               return true;
+            } else {
+               console.log('Please enter the last name.');
+               return false;
+            }
+         }
+      }
+   ])
 
+   .then(answer => {
+      const empArray = [answer.firstName, answer.lastName]
+
+      const roleTable = `SELECT roles.id, roles.title FROM roles`;
+      db.query(roleTable, (err, data) => {
+         if (err) {
+            console.log(err);
+            return;
+         }
+         const role = data.map(({ id, title }) => ({ name: title, value: id }));
+
+         inquirer.prompt([
+            {
+               type: 'list',
+               name: 'role',
+               message: "What is the employee's job title?",
+               choices: role
+            }
+         ])
+         .then(jobTitle => {
+            const job = jobTitle.role;
+            empArray.push(job);
+
+            const managerSql = `SELECT * FROM employee`;
+            db.query(managerSql, (err, data) => {
+               if (err) {
+                  console.log(err);
+                  return;
+               }
+               const manager = data.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
+
+               inquirer.prompt([
+                  {
+                     type: 'list',
+                     name: 'manager',
+                     message: "Who is this employee's manager?",
+                     choices: manager
+                  }
+               ])
+               .then(managerChoice => {
+                  const boss = managerChoice.manager;
+                  empArray.push(boss);
+
+                  const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
+                  db.query(sql, empArray, (err, res) => {
+                     if (err) {
+                        console.log(err);
+                        return
+                     }
+                     viewEmployees();
+                  });
+               });
+            });
+         });
+      })
+   })
+}
    
