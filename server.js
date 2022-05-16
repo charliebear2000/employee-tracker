@@ -36,6 +36,7 @@ const userInput = () => {
                'Add a role',
                'Add an employee',
                'Update an employee role',
+               'View department budgets',
                'Exit application']
       }
    ])
@@ -60,6 +61,9 @@ const userInput = () => {
       }
       if (answer.mainMenu === 'Update an employee role') {
          employeeRole();
+      }
+      if (answer.mainMenu === 'View department budgets') {
+         departmentBudgets();
       }
       if (answer.mainMenu === 'Exit application') {
          db.end();
@@ -298,6 +302,8 @@ const addEmployee = () => {
    
 // function to update employee role
 const employeeRole = () => {
+
+   // take the employees and use them as choices for the next prompt
    const updateEmp = `SELECT * FROM employee`;
 
    db.query(updateEmp, (err, data) => {
@@ -317,11 +323,13 @@ const employeeRole = () => {
          }
       ])
 
+      // add the employee choice to the employee array
       .then(employeeChoice => {
          const emp = employeeChoice.name;
          const empArray = [];
          empArray.push(emp);
 
+         // take the employee roles and use them as choices for the next prompt
          const empSql = `SELECT * FROM roles`;
 
          db.query(empSql, (err, data) => {
@@ -341,11 +349,13 @@ const employeeRole = () => {
                }
             ])
 
+            // add the role choice to the employee array and then reverse the order of the array
             .then(newRoleChoice => {
                role = newRoleChoice.title;
                empArray.push(role);
                empArray.reverse();
 
+               // use the employee array to update the employee table
                const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
                db.query(sql, empArray, (err, res) => {
                   if (err) {
@@ -357,5 +367,20 @@ const employeeRole = () => {
             });
          });
       });
+   });
+}
+
+// function to view department budgets
+const departmentBudgets = () => {
+   const sql = `SELECT department_id AS id, department.name AS department,
+               SUM(salary) AS budget FROM roles
+               LEFT JOIN department ON roles.department_id = department.id GROUP BY department_id`;
+   db.query(sql, (err, sql) => {
+      if(err) {
+         console.log(err);
+         return;
+      }
+      console.table(sql);
+      userInput();
    });
 }
